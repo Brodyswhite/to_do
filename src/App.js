@@ -1,24 +1,62 @@
-import logo from './logo.svg';
+import {useState} from 'react';
 import './App.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import Task from './components/Task'
 
 function App() {
+
+  const [input, setInput] = useState("");
+  const [tasks,setTasks] = useState([]);
+
+  const handleAddTask = e => {
+    e.preventDefault();
+    let t = {
+      title: input,
+      isCompleted: false
+    }
+    setTasks([...tasks,t]);
+    setInput("");
+  }
+
+  const handleToggleCheck = (e,idx) => {
+    let t = tasks[idx];
+    t.isCompleted = !t.isCompleted;
+    setTasks([...tasks.slice(0,idx),t,...tasks.slice(idx+1)])
+  }
+
+  const handleDestroyTask = (e,idx) => {
+    setTasks([...tasks.slice(0,idx),...tasks.slice(idx+1)])
+  }
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <form onSubmit={handleAddTask} className="mx-auto col-4 bg-dark text-warning p-5">
+        <h2 className="text-center">Add A Task</h2>
+        <div className="form-group">
+          <input
+          type="text"
+          className="form-control"
+          onChange={(e) => setInput(e.target.value)}
+          value={input}
+          />
+        </div>
+        <input type="submit" value="Add" className="btn btn-warning btn-outline-dark"/>
+      </form>
+      <div className="d-flex flex-column col-8 mx-auto">
+      {
+        tasks.map((t,i) => {
+          return <Task 
+                      idx={i}
+                      handleToggleCheck={handleToggleCheck}
+                      task={t}
+                      key={i}
+                      handleDestroyTask={handleDestroyTask}
+                    />
+        })
+      }
+      </div>
     </div>
+
   );
 }
 
